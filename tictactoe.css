@@ -1,0 +1,26 @@
+* { box-sizing: border-box; }
+
+html, body, p, header, span
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+    font: 16px 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+#gameboard {
+    display: grid;
+    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+    width: 50vw;
+    height: 50vw;
+    background-color: gray;
+    margin: 5vh auto;
+}
+
+.cell {
+    background-color: lightyellow;
+    border: 1px solid black;
+}
+
+.cell:hover {
+    background-color: #ffff00;
+}

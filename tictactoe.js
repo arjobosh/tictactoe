@@ -1,35 +1,192 @@
-const GameBoard = () => {
-    const Board = [];
+const Player = (name='', symbol='') => {
+    const getName = () => name;
+    const getSymbol = () => { 
+        return (symbol.length == 1) ? symbol : null 
+    }
+    const markCell = (cell=Cell) => {
+        cell.setSymbol(symbol);
+    }
 
-
+    return { getName, getSymbol, markCell };
 }
 
-const Player = (name) => {
-    const printName = () => console.log(name);
-    const getName = () => { return name };
-    return { printName, getName };
+const Cell = (state=true, location=[]) => {
+    let profile = { state, location }
+
+    const changeState = () => profile.state = !profile.state;
+    const setSymbol = (symbol='') => profile.symbol = symbol;
+    const isEmpty = () => profile.state;
+    const getLocation = () => profile.location;
+    const getSymbol = () => profile.symbol;
+    const updateCell = (symbol='') => {
+        changeState();
+        setSymbol(symbol);
+    }
+
+    return { updateCell, isEmpty, getLocation, getSymbol };
 };
 
-const jeff = Player('jeff');
-jeff.printName();
-console.log(jeff.getName());
 
-// inheritance
-const First = (name) => {
-    const { printName } = Player(name);
-    const doThing = () => { console.log('did that') };
-    return { printName, doThing };
-}
+const gameBoard = (() => {
+    const board = [];
+    
+    // initial board setup
+    for (let i = 0; i < 3; i++) {
+        board[i] = [];
+    }
 
-const me = First('foreal?');
-me.doThing();
-me.printName();
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board.length; j++) {
+            board[i][j] = Cell(true, [i, j]);
+        }
+    }
+    // // //
+
+    const printBoard = () => {
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board.length; j++) {
+                console.log(`[${i},${j}] = ${board[i][j].getSymbol()}`);
+            }
+        }
+    }
+
+    const boardIsFull = () => {
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board.length; j++) {
+                if (board[i][j].isEmpty())
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    const checkRowWin = (symbol='', col=0) => {
+        for (let i = 0; i < board.length; i++) {
+            //console.log(board[row][i].getSymbol() + ' : ' + symbol);
+            //console.log(`[${i},${col}] = ${board[i][col].getSymbol()}`);
+            if (board[i][col].getSymbol() != symbol) {
+                return false;
+            }
+        }
+
+        return true;        
+    }
+
+    const checkColWin = (symbol='', row=0) => {
+        for (let i = 0; i < board.length; i++) {
+            //console.log(board[i][col].getSymbol() + ' : ' + symbol);
+            //console.log(`[${row},${i}] = ${board[row][i].getSymbol()}`);
+            if (board[row][i].getSymbol() != symbol) {
+                return false;
+            }
+        }
+
+        return true;   
+    }
+
+    const checkDiagWinRight = (symbol='') => {
+        for (let i = 0; i < board.length; i++) {
+            //console.log(board[i][i].getSymbol() + ' : ' + symbol);
+            //console.log(`[${i},${i}] = ${board[i][i].getSymbol()}`);
+            if (board[i][i].getSymbol() != symbol) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    const checkDiagWinLeft = (symbol='') => {
+        for (let i = 0; i < board.length; i++) {
+            //console.log(board[i][j].getSymbol() + ' : ' + symbol);
+            //console.log(`[${i},${j}] = ${board[i][j].getSymbol()}`);
+
+            if (board[i][board.length-1-i].getSymbol() != symbol) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    const checkWin = (symbol='') => {
+        for (let i = 0; i < board.length; i++) {
+            if (checkRowWin(symbol, i)) return true;
+        }
+
+        for (let i = 0; i < board.length; i++) {
+            if (checkColWin(symbol, i)) return true;
+        }
+
+        if (checkDiagWinLeft(symbol)) return true;
+
+        if (checkDiagWinRight(symbol)) return true;
+
+        return false;
+    }
+
+    return { 
+        printBoard, boardIsFull, checkWin, board 
+    };
+})();
+
+// module pattern wraps the factory in an IIFE (Immediately Invoked Function Expression)
+const displayController = (() => {
+    let curPlayer = null;
+    const player1 = Player('Player 1', 'X');
+    const player2 = Player('Player 2', 'O');
+    setCurPlayer(player1);
+
+    const createBoard = () => {
+        const displayBoard = document.getElementById('gameboard');
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                let cell = document.createElement('div');   
+                cell.className = 'cell';
+                let cellCoord = `r${i}c${j}`;
+                cell.setAttribute('cell-coord', cellCoord);
+                cell.addEventListener('click', function() {
+                    if (gameBoard.board[i][j].isEmpty()) {
+                        gameBoard.board[i][j].updateCell(curPlayer.getSymbol());
+                        cell.innerHTML = curPlayer.getSymbol();
+
+                        //gameBoard.printBoard();
+                        if (gameBoard.checkWin(curPlayer.getSymbol())) {
 
 
+                            alert(`${curPlayer.getName()} wins!`);
+                        }
 
-const displayBoard = document.getElementById('gameboard');
-for (let i = 0; i < 9; i++) {
-    let cell = document.createElement('div');
-    cell.className = 'cell';
-    displayBoard.appendChild(cell);
-}
+                        flipPlayerTurn();
+                    }                    
+                });
+                displayBoard.appendChild(cell);
+            }
+        }
+    }
+
+    function flipPlayerTurn() {
+        if (curPlayer === player1) {
+            setCurPlayer(player2);
+        }
+        else {
+            setCurPlayer(player1);
+        }
+    }
+
+    function getCurPlayer() {
+        return curPlayer
+    }
+
+    function setCurPlayer(player=Player) {
+        curPlayer = player;
+    }
+
+    return {
+        createBoard
+    };
+
+})(gameBoard);
+
+displayController.createBoard();

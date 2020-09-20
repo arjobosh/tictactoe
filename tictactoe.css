@@ -7,12 +7,21 @@ h1, h2, h3, h4, h5, h6 {
     font: 16px 'Helvetica Neue', Helvetica, sans-serif;
 }
 
-header div {
-    text-align: center;
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin: 5vh auto;
-    width: 40vw;
+    width: 37vw;
+    height: 5vh;
     font-size: 1.5em;
     font-weight: 700;
+}
+
+#scoreboard {
+    font-size: 0.8em;
+    font-weight: 400;
+    text-align: right;
 }
 
 #gameboard {

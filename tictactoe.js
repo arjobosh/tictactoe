@@ -1,13 +1,21 @@
-const Player = (name='', symbol='') => {
+const Player = (name='', symbol='', player=0) => {
+    let _score = 0;
     const getName = () => name;
     const getSymbol = () => { 
         return (symbol.length == 1) ? symbol : null 
     }
+    const getPlayer= () => player;
+    const getScore = () => _score;
+
     const markCell = (cell=Cell) => {
         cell.setSymbol(symbol);
     }
+    const incrementScore = () => {
+        _score++;
+        return _score;
+    }
 
-    return { getName, getSymbol, markCell };
+    return { getName, getSymbol, getPlayer, getScore, markCell, incrementScore };
 }
 
 const Cell = (state=true, location=[]) => {
@@ -134,8 +142,8 @@ const gameBoard = (() => {
 // module pattern wraps the factory in an IIFE (Immediately Invoked Function Expression)
 const displayController = (() => {
     let curPlayer = null;
-    const player1 = Player('Player 1', 'X');
-    const player2 = Player('Player 2', 'O');
+    const player1 = Player('player one', 'X', 1);
+    const player2 = Player('player two', 'O', 2);
     setCurPlayer(player1);
     gameBoard.initBoard();
 
@@ -151,24 +159,34 @@ const displayController = (() => {
                     if (gameBoard.board[i][j].isEmpty()) {
                         gameBoard.board[i][j].updateCell(curPlayer.getSymbol());
                         cell.innerHTML = curPlayer.getSymbol();
-
                         //gameBoard.printBoard();
+
                         if (gameBoard.checkWin(curPlayer.getSymbol())) {
-                            alert(`${curPlayer.getName()} wins!`);
-                            gameBoard.initBoard();
-                            document.querySelectorAll('.cell').forEach(ele => {
-                                ele.innerHTML = '';
-                            });
-                            setCurPlayer(player1);
+                            let winner = `${curPlayer.getName()}`;
+                            alert(winner + ' wins!');
+
+                            document.getElementById(`p${curPlayer.getPlayer()}`).innerHTML
+                             = curPlayer.getName() + `: ${curPlayer.incrementScore()}`;
+
+                            resetBoard();
                         }
                         else {
                             flipPlayerTurn();
                         }
+                        
                     }                    
                 });
                 displayBoard.appendChild(cell);
             }
         }
+    }
+
+    function resetBoard() {
+        gameBoard.initBoard();
+        document.querySelectorAll('.cell').forEach(ele => {
+            ele.innerHTML = '';
+        });
+        setCurPlayer(player1);
     }
 
     function flipPlayerTurn() {

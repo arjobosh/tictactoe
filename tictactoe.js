@@ -26,21 +26,21 @@ const Cell = (state=true, location=[]) => {
     return { updateCell, isEmpty, getLocation, getSymbol };
 };
 
-
 const gameBoard = (() => {
     const board = [];
     
     // initial board setup
-    for (let i = 0; i < 3; i++) {
-        board[i] = [];
-    }
+    const initBoard = () => {
+        for (let i = 0; i < 3; i++) {
+            board[i] = [];
+        }
 
-    for (let i = 0; i < board.length; i++) {
-        for (let j = 0; j < board.length; j++) {
-            board[i][j] = Cell(true, [i, j]);
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board.length; j++) {
+                board[i][j] = Cell(true, [i, j]);
+            }
         }
     }
-    // // //
 
     const printBoard = () => {
         for (let i = 0; i < board.length; i++) {
@@ -127,7 +127,7 @@ const gameBoard = (() => {
     }
 
     return { 
-        printBoard, boardIsFull, checkWin, board 
+        initBoard, printBoard, boardIsFull, checkWin, board 
     };
 })();
 
@@ -137,6 +137,7 @@ const displayController = (() => {
     const player1 = Player('Player 1', 'X');
     const player2 = Player('Player 2', 'O');
     setCurPlayer(player1);
+    gameBoard.initBoard();
 
     const createBoard = () => {
         const displayBoard = document.getElementById('gameboard');
@@ -153,12 +154,16 @@ const displayController = (() => {
 
                         //gameBoard.printBoard();
                         if (gameBoard.checkWin(curPlayer.getSymbol())) {
-
-
                             alert(`${curPlayer.getName()} wins!`);
+                            gameBoard.initBoard();
+                            document.querySelectorAll('.cell').forEach(ele => {
+                                ele.innerHTML = '';
+                            });
+                            setCurPlayer(player1);
                         }
-
-                        flipPlayerTurn();
+                        else {
+                            flipPlayerTurn();
+                        }
                     }                    
                 });
                 displayBoard.appendChild(cell);
@@ -187,6 +192,4 @@ const displayController = (() => {
         createBoard
     };
 
-})(gameBoard);
-
-displayController.createBoard();
+})(gameBoard).createBoard();

@@ -7,11 +7,19 @@ h1, h2, h3, h4, h5, h6 {
     font: 16px 'Helvetica Neue', Helvetica, sans-serif;
 }
 
+header div {
+    text-align: center;
+    margin: 5vh auto;
+    width: 40vw;
+    font-size: 1.5em;
+    font-weight: 700;
+}
+
 #gameboard {
     display: grid;
     grid-template: repeat(3, 1fr) / repeat(3, 1fr);
-    width: 40vw;
-    height: 40vw;
+    width: 37vw;
+    height: 37vw;
     background-color: gray;
     margin: 5vh auto;
 }
@@ -24,7 +32,7 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     width: 100%;
     height: 100%;
-    font-size: 5em;
+    font-size: 4em;
     
 }
 

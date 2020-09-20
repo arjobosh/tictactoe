@@ -1,10 +1,13 @@
+// by joshua arber
+
 const Player = (name='', symbol='', player=0) => {
     let _score = 0;
+
     const getName = () => name;
     const getSymbol = () => { 
         return (symbol.length == 1) ? symbol : null 
     }
-    const getPlayer= () => player;
+    const getPlayer = () => player;
     const getScore = () => _score;
 
     const markCell = (cell=Cell) => {
@@ -15,7 +18,10 @@ const Player = (name='', symbol='', player=0) => {
         return _score;
     }
 
-    return { getName, getSymbol, getPlayer, getScore, markCell, incrementScore };
+    return { 
+        getName, getSymbol, getPlayer, getScore, 
+        markCell, incrementScore 
+    };
 }
 
 const Cell = (state=true, location=[]) => {
@@ -152,7 +158,7 @@ const displayController = (() => {
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
                 let cell = document.createElement('div');   
-                cell.className = 'cell';
+                cell.className = 'cell';            
                 let cellCoord = `r${i}c${j}`;
                 cell.setAttribute('cell-coord', cellCoord);
                 cell.addEventListener('click', function() {
@@ -165,14 +171,19 @@ const displayController = (() => {
                             let winner = `${curPlayer.getName()}`;
                             alert(winner + ' wins!');
 
-                            document.getElementById(`p${curPlayer.getPlayer()}`).innerHTML
-                             = curPlayer.getName() + `: ${curPlayer.incrementScore()}`;
-
+                            document.getElementById(`p${curPlayer.getPlayer()}`).innerHTML =
+                                curPlayer.getName() + `: ${curPlayer.incrementScore()}`;
+                            
+                            resetBoard();
+                        }
+                        else if (gameBoard.boardIsFull()) {
+                            alert('game is a draw.');
                             resetBoard();
                         }
                         else {
                             flipPlayerTurn();
                         }
+                        
                         
                     }                    
                 });
@@ -199,7 +210,7 @@ const displayController = (() => {
     }
 
     function getCurPlayer() {
-        return curPlayer
+        return curPlayer;
     }
 
     function setCurPlayer(player=Player) {
